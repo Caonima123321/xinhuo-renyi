@@ -143,6 +143,21 @@ APPMODE_JS = ("""<script>
 })();
 </script>""").encode("utf-8")
 
+FULLMODE_CSS = ("""<style id="fullmode">
+.panel{display:none}
+html,body{height:100%;margin:0;overflow:hidden}
+body{display:block;padding:0;background:var(--paper)}
+.stage{display:flex;justify-content:center;align-items:flex-start;padding:0;height:100dvh;min-height:0}
+.device{width:100vw;height:100dvh}
+.phone{width:100vw;height:100dvh;padding:0;border-radius:0;box-shadow:none;background:transparent}
+.screenwrap{width:100%;height:100%;border-radius:0}
+.island{display:none}
+@media (max-width:560px){
+  body{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+  .screen{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+}
+</style>""").encode("utf-8")
+
 JOIN_HTML = """<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>薪火仁义 · 联机演示</title>
@@ -217,8 +232,12 @@ class Handler(BaseHTTPRequestHandler):
                     html = f.read()
                 # 线上/联机打开时直接进「小程序模式」：去掉外侧流程导航，手机端铺满
                 pass  # 保留机身边框，不注入 bare
-                html = html.replace(b"</head>", APPMODE_CSS + b"</head>", 1)
-                html = html.replace(b"</body>", APPMODE_JS + b"</body>", 1)
+                full = (q.get("full") or [""])[0] == "1"
+                if full:
+                    html = html.replace(b"</head>", FULLMODE_CSS + b"</head>", 1)
+                else:
+                    html = html.replace(b"</head>", APPMODE_CSS + b"</head>", 1)
+                    html = html.replace(b"</body>", APPMODE_JS + b"</body>", 1)
                 self._send(200, html, "text/html; charset=utf-8")
             except FileNotFoundError:
                 self._send(404, "找不到 薪火仁义-交互原型.html", "text/plain; charset=utf-8")
