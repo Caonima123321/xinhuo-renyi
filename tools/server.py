@@ -114,6 +114,30 @@ def qr_svg(text):
         return ""
 
 
+APPMODE_CSS = b"""<style id="appmode">
+body.bare{overflow:hidden}
+body.bare .stage{display:flex;justify-content:center;align-items:center;padding:0;min-height:100dvh}
+@media (max-width:560px){
+  body.bare .stage{align-items:flex-start}
+  body.bare .phone{transform-origin:top center}
+}
+</style>"""
+
+APPMODE_JS = b"""<script>
+(function(){
+  function fit(){
+    var ph=document.querySelector('.phone'); if(!ph) return;
+    var s=1;
+    if(innerWidth<=560){ s=Math.min(1, innerWidth/390, innerHeight/844); }
+    ph.style.transform = s<1 ? 'scale('+s+')' : '';
+  }
+  window.addEventListener('resize',fit);
+  window.addEventListener('orientationchange',fit);
+  if(document.readyState!=='loading'){fit();} else {document.addEventListener('DOMContentLoaded',fit);}
+  setTimeout(fit,120); setTimeout(fit,600);
+})();
+</script>"""
+
 JOIN_HTML = """<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>薪火仁义 · 联机演示</title>
@@ -185,7 +209,12 @@ class Handler(BaseHTTPRequestHandler):
         if path in ("/", "/index.html"):
             try:
                 with open(PAGE, "rb") as f:
-                    self._send(200, f.read(), "text/html; charset=utf-8")
+                    html = f.read()
+                # 线上/联机打开时直接进「小程序模式」：去掉外侧流程导航，手机端铺满
+                html = html.replace(b"<body>", b'<body class="bare">', 1)
+                html = html.replace(b"</head>", APPMODE_CSS + b"</head>", 1)
+                html = html.replace(b"</body>", APPMODE_JS + b"</body>", 1)
+                self._send(200, html, "text/html; charset=utf-8")
             except FileNotFoundError:
                 self._send(404, "找不到 薪火仁义-交互原型.html", "text/plain; charset=utf-8")
             return
