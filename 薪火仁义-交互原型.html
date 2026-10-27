@@ -665,7 +665,6 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
           <svg width="11" height="18" viewBox="0 0 11 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 1.5 2 9l7.5 7.5"/></svg>
         </div>
         <h2 id="navTitle">薪火仁义</h2>
-        <div class="capsule"><div class="dot3"><i></i><i></i><i></i></div><div class="ring"><span></span></div></div>
       </div>
 
       <main id="main">
@@ -2774,6 +2773,7 @@ const POI_TTS = "一九三五年十一月，红四方面军进驻天全，总部
 (function(){
   function fit(){
     if(location.protocol!=='file:'){return;}
+    if(location.href.indexOf('bare=1')>=0){return;}
     if(document.body.classList.contains('bare')){return;}
     var ph=document.querySelector('.phone');
     if(!ph){return;}
