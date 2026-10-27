@@ -2769,6 +2769,28 @@ const POI_TTS = "一九三五年十一月，红四方面军进驻天全，总部
 
 
 
+<script>
+/* PRESENT_FIT：讲解版在矮屏上自动缩放，保证「左导航 + 右手机」整屏可见、不滚动 */
+(function(){
+  function fit(){
+    if(location.protocol!=='file:'){return;}
+    if(document.body.classList.contains('bare')){return;}
+    var ph=document.querySelector('.phone');
+    if(!ph){return;}
+    var s=Math.min(1,(innerHeight-48)/864);
+    if(s<0.995){
+      ph.style.zoom=s;
+      document.body.style.overflow='hidden';
+    }else{
+      ph.style.zoom='';
+      document.body.style.overflow='';
+    }
+  }
+  window.addEventListener('resize',fit);
+  if(document.readyState!=='loading'){fit();}else{document.addEventListener('DOMContentLoaded',fit);}
+  setTimeout(fit,200);setTimeout(fit,900);
+})();
+</script>
 </body>
 </html>
 
