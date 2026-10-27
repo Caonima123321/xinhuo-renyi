@@ -138,12 +138,21 @@ li{{margin:6px 0}}
 <div class="url">{url}</div>
 <div class="qr">{qr}</div>
 <ol>
-<li>手机连同一个 Wi-Fi（或同一热点），扫上面的码 / 输入地址</li>
+<li>{tip}</li>
 <li>进「预约研学」→ 选日期与人数 → 查排程 → 支付订金</li>
 <li>其他设备上的余位会在 1.5 秒内变化，右上角显示在线人数</li>
 </ol>
 <div class="st">● 当前在线 <b>{online}</b> 人 · 已收 <b>{count}</b> 单</div>
 </div></body></html>"""
+
+
+def public_base(handler):
+    """按请求头推断对外可访问的地址：云上取 Host，本机取局域网 IP。"""
+    host = (handler.headers.get("Host") or "").strip()
+    proto = (handler.headers.get("X-Forwarded-Proto") or "http").strip()
+    if host and "localhost" not in host and "127.0.0.1" not in host:
+        return "%s://%s/" % (proto, host)
+    return "http://%s:%d/" % (lan_ip(), PORT)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -195,8 +204,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/qr.svg":
-            ip = lan_ip()
-            svg = qr_svg("http://%s:%d/" % (ip, PORT))
+            svg = qr_svg(public_base(self))
             if not svg:
                 self._send(500, "二维码生成失败（缺 qrcode 库）", "text/plain; charset=utf-8")
                 return
@@ -217,8 +225,7 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/join":
-            ip = lan_ip()
-            base = "http://%s:%d/" % (ip, PORT)
+            base = public_base(self)
             custom = (q.get("u") or [""])[0]
             if custom.startswith("https://") or custom.startswith("http://"):
                 base = custom
@@ -226,7 +233,10 @@ class Handler(BaseHTTPRequestHandler):
                 s = snapshot()
             qr = qr_svg(base)
             self._send(200, JOIN_HTML.format(
-                url=base, qr=qr or "",
+                url=base, qr=qr or "", tip=(
+                    "任何网络都能打开，扫上面的码即可（不用连同一个 Wi-Fi）"
+                    if base.startswith("https://") or "onrender.com" in base
+                    else "手机连同一个 Wi-Fi（或同一热点），扫上面的码 / 输入地址"),
                 online=s["online"], count=s["count"]),
                 "text/html; charset=utf-8")
             return
