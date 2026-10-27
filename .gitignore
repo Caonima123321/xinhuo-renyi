@@ -1,1 +1,16 @@
-# init
+# 运行时产生的数据，不进仓库
+tools/online-state.json
+
+# Python
+__pycache__/
+*.pyc
+
+# 系统与编辑器
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
+
+# 日志
+*.log
