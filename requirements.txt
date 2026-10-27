@@ -1,2 +1,3 @@
-# 服务端只用 Python 标准库；二维码库已随仓库放在 tools/pylibs，无需额外安装。
-# 保留本文件是为了让 Render 的 build 步骤有一个明确的入口。
+# 服务端核心只用 Python 标准库；
+# 二维码用 qrcode（纯 Python，输出 SVG，不需要 Pillow）。
+qrcode>=7.4

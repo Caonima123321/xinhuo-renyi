@@ -1,0 +1,535 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>薪火仁义 · 设计图版</title>
+<style>
+:root{
+  --red:#A63A2E; --red2:#C0463A; --red-deep:#7A2820; --red-soft:#F7E9E4;
+  --gold:#B8893F; --gold-soft:#F3EAD8;
+  --paper:#F7F2E8; --ink:#2A241E; --ink2:#6B5D50; --ink3:#998B7C;
+  --line:#DCD2BF; --green:#3E5B45;
+  --serif:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#201C17;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.sheet{display:none;width:1400px;height:780px;background:var(--paper);padding:28px 44px 56px;position:relative;overflow:hidden}
+.sheet:target{display:block}
+.sheet::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(42,36,30,.045) 1px,transparent 1px);background-size:4px 4px;pointer-events:none}
+.hd{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1.5px solid var(--ink);padding-bottom:11px;margin-bottom:18px;position:relative;z-index:2}
+.hd .l{display:flex;align-items:baseline;gap:14px}
+.hd .no{font-family:var(--serif);font-size:13px;letter-spacing:.3em;color:var(--red)}
+.hd h1{font-family:var(--serif);font-size:26px;letter-spacing:.06em;font-weight:700}
+.hd .sub{font-size:12.5px;color:var(--ink2);letter-spacing:.02em}
+.hd .r{text-align:right;font-size:11px;color:var(--ink3);line-height:1.7;letter-spacing:.04em}
+.ft{position:absolute;left:44px;right:44px;bottom:14px;display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink3);letter-spacing:.06em;border-top:1px solid var(--line);padding-top:8px}
+
+/* ---------- 旅程图 ---------- */
+.jgrid{display:grid;grid-template-columns:128px repeat(6,1fr);position:relative;z-index:2}
+.jh{background:var(--ink);color:#F7F2E8;padding:10px 11px;font-size:12px;letter-spacing:.04em;border-right:1px solid rgba(255,255,255,.14)}
+.jh b{font-family:var(--serif);font-size:14px;display:block;margin-bottom:3px}
+.jh span{font-size:10px;opacity:.62}
+.jrow-l{background:#EFE7D8;font-size:12px;letter-spacing:.06em;padding:12px 10px;display:flex;align-items:center;color:var(--ink2);border-top:1px solid var(--line);border-right:1px solid var(--line)}
+.jc{padding:12px 11px;font-size:12px;line-height:1.8;color:#3B332B;border-top:1px solid var(--line);border-right:1px solid var(--line);background:rgba(255,255,255,.5)}
+.jc em{font-style:normal;display:inline-block;background:#fff;box-shadow:inset 0 0 0 1px var(--line);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--ink2);margin:3px 4px 0 0}
+.jc.pain{color:#7A3B32}
+.jc.pain b{color:var(--red);font-weight:600}
+.jc.opp{color:#2F4A35}
+.jc.opp b{color:var(--green);font-weight:600}
+.curve{grid-column:2 / span 6;position:relative;border-top:1px solid var(--line);border-right:1px solid var(--line);height:196px;background:rgba(255,255,255,.5)}
+.curve svg{position:absolute;inset:0;width:100%;height:100%}
+.legend{position:absolute;right:12px;top:8px;font-size:9.5px;color:var(--ink3);display:flex;gap:12px}
+.legend i{display:inline-block;width:16px;height:2px;vertical-align:middle;margin-right:4px}
+.ylab{position:absolute;left:8px;top:8px;font-size:9px;color:var(--ink3);line-height:1.9;letter-spacing:.08em}
+
+/* ---------- 蓝图 ---------- */
+.bgrid{display:grid;grid-template-columns:122px repeat(5,1fr);position:relative;z-index:2}
+.bh{background:var(--ink);color:#F7F2E8;padding:9px 10px;font-size:11.8px;letter-spacing:.04em;border-right:1px solid rgba(255,255,255,.14)}
+.bh b{font-family:var(--serif);font-size:13.5px}
+.bl{background:#EFE7D8;font-size:11px;padding:8px 10px;color:var(--ink2);border-top:1px solid var(--line);border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:2px}
+.bl span{font-size:9.5px;color:var(--ink3)}
+.bc{padding:8px 10px;font-size:11px;line-height:1.7;border-top:1px solid var(--line);border-right:1px solid var(--line);background:rgba(255,255,255,.5);color:#3B332B}
+.bc b{color:var(--red);font-weight:600}
+.bc.g{background:rgba(62,91,69,.07)}
+.bc.y{background:rgba(184,137,63,.1)}
+.footnote{margin-top:12px;font-size:11px;color:var(--ink2);line-height:1.75;position:relative;z-index:2;border-left:3px solid var(--red);padding-left:12px}
+.footnote b{color:var(--red)}
+
+/* ---------- 底部条带 ---------- */
+.band{margin-top:12px;position:relative;z-index:2}
+.band .bt{font-size:11px;letter-spacing:.16em;color:var(--red);font-family:var(--serif);margin-bottom:9px;line-height:1.5;border-bottom:1px solid var(--line);padding-bottom:5px}
+
+.band .row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.band .row.four{grid-template-columns:repeat(4,1fr)}
+.bx{border:1px solid var(--line);border-radius:11px;padding:12px 14px;background:rgba(255,255,255,.6)}
+.bx h5{font-family:var(--serif);font-size:12.5px;letter-spacing:.04em;margin-bottom:4px;color:var(--red-deep);display:flex;align-items:center;gap:7px}
+.bx h5 i{font-style:normal;width:17px;height:17px;border-radius:50%;background:var(--red);color:#fff;font-size:9.5px;display:grid;place-items:center;flex:0 0 auto}
+.bx p{font-size:10.8px;line-height:1.75;color:var(--ink2)}
+.bx p b{color:var(--ink)}
+
+/* ---------- IA ---------- */
+.iawrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:2}
+.ia-col{background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ia-col .top{background:var(--red);color:#fff;padding:11px 13px;font-family:var(--serif);font-size:15px;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:baseline}
+.ia-col .top span{font-family:var(--sans);font-size:9.5px;opacity:.75;letter-spacing:0}
+.ia-col ul{list-style:none;padding:11px 13px 14px}
+.ia-col li{font-size:11.8px;padding:8px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:6px;color:#3B332B}
+.ia-col li:last-child{border-bottom:0}
+.ia-col li span{font-size:9.5px;color:var(--ink3);white-space:nowrap}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:16px;position:relative;z-index:2}
+.role{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:rgba(255,255,255,.55)}
+.role h4{font-family:var(--serif);font-size:14px;letter-spacing:.05em;margin-bottom:7px;display:flex;align-items:center;gap:8px}
+.role h4 i{font-style:normal;width:19px;height:19px;border-radius:50%;background:var(--red);color:#fff;font-size:10px;display:grid;place-items:center}
+.role p{font-size:11px;line-height:1.8;color:var(--ink2)}
+.role p b{color:var(--ink);font-weight:600}
+
+/* ---------- 流程 ---------- */
+.lane{display:grid;grid-template-columns:104px repeat(7,1fr);align-items:stretch;position:relative;z-index:2}
+.lane .lb{font-size:11.5px;color:#fff;background:var(--ink);border-radius:9px 0 0 9px;padding:0 8px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.5;font-family:var(--serif);letter-spacing:.05em}
+.lane .lb.g{background:var(--green)}
+.lane .lb.y{background:#8E6A24}
+.node{position:relative;margin:8px 9px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:10px 10px;font-size:10.8px;line-height:1.6;color:#3B332B;box-shadow:0 3px 8px -6px rgba(42,36,30,.5);min-height:64px}
+.node b{display:block;font-size:12px;color:var(--ink);margin-bottom:3px;font-weight:600}
+.node::after{content:"";position:absolute;right:-14px;top:50%;width:9px;height:1.5px;background:var(--line)}
+.node.hi{background:var(--red-soft);border-color:rgba(166,58,46,.35)}
+.node.hi b{color:var(--red-deep)}
+.node.ghost{background:transparent;border-style:dashed;box-shadow:none;color:var(--ink3)}
+.num{position:absolute;left:-8px;top:-8px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9.5px;display:grid;place-items:center;font-weight:600}
+
+/* 状态机 */
+.states{display:flex;align-items:center;gap:0;position:relative;z-index:2;margin-top:2px}
+.st{flex:1;text-align:center;font-size:11px;padding:11px 6px;border:1px solid var(--line);background:rgba(255,255,255,.6);border-radius:9px;color:var(--ink2)}
+.st b{display:block;font-family:var(--serif);font-size:12.5px;color:var(--ink);margin-bottom:3px;letter-spacing:.04em}
+.ar{width:26px;text-align:center;color:var(--gold);font-size:13px;flex:0 0 auto}
+.st.on{background:var(--red-soft);border-color:rgba(166,58,46,.4)}
+.st.on b{color:var(--red-deep)}
+
+/* ---------- 过程 ---------- */
+.proc{display:grid;grid-template-columns:repeat(6,1fr);gap:13px;position:relative;z-index:2}
+.step{background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:12px;padding:15px 14px 13px}
+.step .k{font-family:var(--serif);font-size:10.5px;color:var(--red);letter-spacing:.18em}
+.step h3{font-family:var(--serif);font-size:15.5px;margin:7px 0 9px;letter-spacing:.03em}
+.step p{font-size:11.2px;line-height:1.85;color:var(--ink2)}
+.step p b{color:var(--ink)}
+.step .out{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:10px;color:var(--ink3);line-height:1.6}
+.timeline{display:flex;align-items:stretch;gap:0;position:relative;z-index:2;margin-top:4px}
+.tl-i{flex:1;position:relative;padding:0 10px;border-left:1px solid var(--line)}
+.tl-i:first-child{border-left:2px solid var(--red)}
+.tl-i .d{font-family:var(--serif);font-size:11.5px;color:var(--red);letter-spacing:.04em}
+.tl-i .t{font-size:11px;color:var(--ink2);line-height:1.7;margin-top:4px}
+.dia{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;position:relative;z-index:2}
+.dbox{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.55)}
+.dbox h4{font-family:var(--serif);font-size:13.5px;margin-bottom:8px;letter-spacing:.04em;color:var(--red-deep)}
+.dbox ul{list-style:none;font-size:11px;line-height:2;color:var(--ink2)}
+.dbox li::before{content:"—";color:var(--gold);margin-right:6px}
+.gnav{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;display:flex;gap:6px;
+  background:rgba(20,17,13,.82);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:6px 8px;z-index:99;
+  backdrop-filter:blur(8px)}
+.gnav a{color:#CFC4B4;font-size:12px;text-decoration:none;padding:5px 10px;border-radius:14px;letter-spacing:.03em}
+.gnav a:hover{background:rgba(255,255,255,.1);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- ============ 1 用户旅程 ============ -->
+<section class="sheet" id="journey">
+  <div class="hd">
+    <div class="l"><span class="no">01</span><h1>用户旅程图</h1><span class="sub">天全中学 · 40 人班级研学｜现状 vs 设计后</span></div>
+    <div class="r">访谈 12 人 · 问卷 156 份 · 跟拍 3 个团<br>2025.10 – 2026.03</div>
+  </div>
+
+  <div class="jgrid">
+    <div class="jh" style="background:transparent;border:0"></div>
+    <div class="jh"><b>① 发现</b><span>看到 / 听说</span></div>
+    <div class="jh"><b>② 决策</b><span>能不能来</span></div>
+    <div class="jh"><b>③ 预约</b><span>把人数定下来</span></div>
+    <div class="jh"><b>④ 行前</b><span>集合与准备</span></div>
+    <div class="jh"><b>⑤ 现场</b><span>一天怎么过</span></div>
+    <div class="jh"><b>⑥ 离场</b><span>带走什么</span></div>
+
+    <div class="jrow-l">用户行为</div>
+    <div class="jc">在朋友圈看到"红军村"稻田照片，搜"天全 研学"。</div>
+    <div class="jc">查车程、问有没有饭吃、能不能住、讲解怎么找。</div>
+    <div class="jc">打电话找村委，加 3 个微信，反复确认 40 人的餐位。</div>
+    <div class="jc">群里发通知，收身份证买保险，问集合点在哪。</div>
+    <div class="jc">跟着讲解走点位，中午吃饭，下午自由活动。</div>
+    <div class="jc">拍照片发班级群，老师要一份"研学证明"。</div>
+
+    <div class="jrow-l">主要触点</div>
+    <div class="jc"><em>小红书</em><em>公众号</em><em>朋友转发</em></div>
+    <div class="jc"><em>地图导航</em><em>电话</em><em>点评</em></div>
+    <div class="jc"><em>电话</em><em>微信</em><em>手写名单</em></div>
+    <div class="jc"><em>微信群</em><em>短信</em></div>
+    <div class="jc"><em>游客中心</em><em>讲解员</em><em>红军食堂</em></div>
+    <div class="jc"><em>纸质证明</em><em>朋友圈</em></div>
+
+    <div class="jrow-l" style="border-bottom:0">情绪曲线</div>
+    <div class="curve">
+      <svg viewBox="0 0 1200 196" preserveAspectRatio="none">
+        <line x1="0" y1="45" x2="1200" y2="45" stroke="#E4DACA" stroke-dasharray="3 6"/>
+        <line x1="0" y1="105" x2="1200" y2="105" stroke="#E4DACA" stroke-dasharray="3 6"/>
+        <polyline points="100,108 300,120 500,140 700,132 900,102 1100,118" fill="none" stroke="#9C8F81" stroke-width="2" stroke-dasharray="7 6"/>
+        <polyline points="100,96 300,80 500,64 700,60 900,48 1100,56" fill="none" stroke="#A63A2E" stroke-width="2.8"/>
+        <g fill="#A63A2E"><circle cx="100" cy="96" r="5"/><circle cx="300" cy="80" r="5"/><circle cx="500" cy="64" r="5"/><circle cx="700" cy="60" r="5"/><circle cx="900" cy="48" r="5"/><circle cx="1100" cy="56" r="5"/></g>
+        <g fill="#9C8F81"><circle cx="100" cy="108" r="3.2"/><circle cx="300" cy="120" r="3.2"/><circle cx="500" cy="140" r="3.2"/><circle cx="700" cy="132" r="3.2"/><circle cx="900" cy="102" r="3.2"/><circle cx="1100" cy="118" r="3.2"/></g>
+      </svg>
+      <div class="ylab">高<br><br><br>低</div>
+      <div class="legend"><span><i style="background:#9C8F81"></i>现状</span><span><i style="background:#A63A2E"></i>设计后</span></div>
+    </div>
+
+    <div class="jrow-l">痛点</div>
+    <div class="jc pain">内容散在短视频里，<b>没有一处能看清"这一天到底干什么"</b>。</div>
+    <div class="jc pain">餐、住、讲解<b>三件事三个口径</b>，报价要问三遍。</div>
+    <div class="jc pain">一次团队要打 <b>7–8 个电话</b>；改人数要重来一遍。</div>
+    <div class="jc pain">集合点说不清；<b>保险名单靠 Excel 手抄</b>。</div>
+    <div class="jc pain">到点拍照就走，<b>停留 2 小时、人均不到 50 元</b>。</div>
+    <div class="jc pain">学校要证明只能 <b>手写盖章</b>；没有复购理由。</div>
+
+    <div class="jrow-l" style="border-bottom:0">机会点</div>
+    <div class="jc opp"><b>一条可下单的"一日线"</b>，把 8 处遗址连成动线。</div>
+    <div class="jc opp"><b>实时余量</b>：讲解员 / 餐位 / 教室 / 车位一起看。</div>
+    <div class="jc opp"><b>一次组队预约</b>：选日期人数即成单，锁定四类资源。</div>
+    <div class="jc opp"><b>行前包</b>：集合点导航 + 名单收集 + 保险一键。</div>
+    <div class="jc opp"><b>四个任务</b>：听、打水、吃饭、集章，把 2 小时拉成 6.5 小时。</div>
+    <div class="jc opp"><b>可核验的电子证书</b> + 打卡留存 → 复购与转介绍。</div>
+  </div>
+
+  <div class="band">
+    <div class="bt">从旅程里读出的三个判断</div>
+    <div class="row">
+      <div class="bx"><h5><i>1</i>谁最痛</h5><p><b>班主任</b>要安全、要能交差；<b>村委</b>要调度、要对账。不是"游客"最痛，是组织者最痛——产品首先要服务组织者。</p></div>
+      <div class="bx"><h5><i>2</i>先改哪两步</h5><p>预约（7–8 通电话）是<b>后端能力问题</b>；现场只停 2 小时是<b>前端产品问题</b>。一个用排程解决，一个用"四个任务"解决。</p></div>
+      <div class="bx"><h5><i>3</i>改完变什么</h5><p>8 通电话 → <b>1 次下单</b>；停留 2h → <b>6.5h</b>；人均 50 元 → <b>128 元</b>；手写证明 → <b>可核验证书</b>。</p></div>
+    </div>
+  </div>
+  <div class="ft"><span>薪火仁义 · 天全县仁义镇红色研学与在地体验</span><span>设计图版 01 / 05</span></div>
+</section>
+
+<!-- ============ 2 服务蓝图 ============ -->
+<section class="sheet" id="blueprint">
+  <div class="hd">
+    <div class="l"><span class="no">02</span><h1>服务蓝图</h1><span class="sub">「重走长征路 · 一日粮仓」一次完整接待</span></div>
+    <div class="r">前场 4 个触点 · 后台 5 个系统<br>3 类角色 · 12 户村民参与</div>
+  </div>
+
+  <div class="bgrid">
+    <div class="bh" style="background:transparent;border:0"></div>
+    <div class="bh"><b>① 预约前</b><br><span style="font-size:9.5px;opacity:.65">发现与比较</span></div>
+    <div class="bh"><b>② 预约中</b><br><span style="font-size:9.5px;opacity:.65">组队与支付</span></div>
+    <div class="bh"><b>③ 行前</b><br><span style="font-size:9.5px;opacity:.65">T-7 至 T-1</span></div>
+    <div class="bh"><b>④ 到场体验</b><br><span style="font-size:9.5px;opacity:.65">08:40 – 16:30</span></div>
+    <div class="bh"><b>⑤ 离场之后</b><br><span style="font-size:9.5px;opacity:.65">证书与复购</span></div>
+
+    <div class="bl">顾客行为</div>
+    <div class="bc">刷到稻田与遗址短视频，搜"天全 红色研学"，看课程页。</div>
+    <div class="bc">选日期与人数，看系统给的排程，付 20% 订金。</div>
+    <div class="bc">收到行前包：集合点、天气、带什么、名单收集。</div>
+    <div class="bc">开营 → 情景课 → 打水 → 红军餐 → 豆花 → 稻田 → 结营。</div>
+    <div class="bc">领证书、发班级群、评价、被推荐下一年级。</div>
+
+    <div class="bl">前台触点<span>界面 / 物料</span></div>
+    <div class="bc">小程序首页 → 课程详情；<b>8 处遗址一图可看</b>。</div>
+    <div class="bc">日历 + 人数步进器 + 排程结果页；支付成功页带核销码。</div>
+    <div class="bc">行程 Tab：时间轴 + 导航 + 行前清单 + 保险名单。</div>
+    <div class="bc">地图点位打卡、集章册、讲解员手机核销。</div>
+    <div class="bc">电子证书（可核验编号）、分享卡片、评价入口。</div>
+
+    <div class="bl">前台人员<span>讲解员 / 商户</span></div>
+    <div class="bc">—（内容由村集体与党校供给，讲解员只做审核）</div>
+    <div class="bc">讲解员端收到派单提醒，确认或换人。</div>
+    <div class="bc">讲解员在群里发接站信息；商户备料、排班。</div>
+    <div class="bc">讲解员带队、<b>扫核销码</b>；食堂按人数上餐；李婶带豆花。</div>
+    <div class="bc">商户看结算；讲解员收到本场评价。</div>
+
+    <div class="bl g">后台系统<span>规则与数据</span></div>
+    <div class="bc g">内容库（遗址 / 课程 / 讲解词）→ 小程序渲染。</div>
+    <div class="bc g"><b>库存日历 + 四类资源匹配</b>；下单即锁位，30 分钟释放。</div>
+    <div class="bc g">名单与保险接口；行前 3 天 / 1 天定时推送。</div>
+    <div class="bc g">核销回调 → 订单状态、库存回写、打卡定位校验（50m）。</div>
+    <div class="bc g">证书签发（一证一码）；<b>分账</b>：农户 87% / 村集体 8% / 平台 5%。</div>
+
+    <div class="bl y">支持流程<span>镇 / 村 / 供应商</span></div>
+    <div class="bc y">镇文旅办审内容、村史馆供稿、党校审讲解词。</div>
+    <div class="bc y">村集体维护排班表与后备讲解员库（在职 6 + 后备 3）。</div>
+    <div class="bc y">保险供应商接口；交通与停车位由游客中心登记。</div>
+    <div class="bc y">食堂卫生与容量备案；体验物料由合作社统采。</div>
+    <div class="bc y">月度对账；村集体分成入账；满意度回访。</div>
+
+    <div class="bl" style="background:#2A241E;color:#F7F2E8">关键数据</div>
+    <div class="bc y">课程浏览→详情 62%</div>
+    <div class="bc y">排程页→支付 38%</div>
+    <div class="bc y">行前 7 日取消 3.1%</div>
+    <div class="bc y">核销率 99.2%</div>
+    <div class="bc y">证书领取 91% · 复购 12%</div>
+  </div>
+
+  <div class="band">
+    <div class="bt">三个关键时刻（Moments of Truth）</div>
+    <div class="row">
+      <div class="bx"><h5><i>①</i>排程结果页</h5><p>把"能不能约上"从<b>电话问询</b>变成一张确定答案。四项资源齐备 + 一句人话建议，是决定下单的那一屏。</p></div>
+      <div class="bx"><h5><i>②</i>核销那一秒</h5><p>讲解员扫码、商户按一下——这是<b>服务质量的第一道闸</b>，也是村民对系统产生信任的唯一入口。</p></div>
+      <div class="bx"><h5><i>③</i>证书生成</h5><p>把一次性接待转成<b>可核验的成果</b>：学校能归档，学生能分享，明年还会再来。</p></div>
+    </div>
+  </div>
+
+  <div class="band" style="margin-top:14px">
+    <div class="bt">日接待容量（当前供给能力，超出即触发预警）</div>
+    <div class="row four" style="grid-template-columns:repeat(4,1fr)">
+      <div class="bx"><h5>讲解员</h5><p>在职 <b>6</b> + 后备 <b>3</b>；日承载 <b>5 团 / 240 人</b>，单团上限 40 人。</p></div>
+      <div class="bx"><h5>红军餐</h5><p>4 家食堂 <b>620 位/日</b>；峰值 11:30–12:30，建议错峰至 11:00 或 13:00。</p></div>
+      <div class="bx"><h5>民宿床位</h5><p>2 家 <b>140 床</b>；周末入住率 78%，团队过夜需提前 14 天。</p></div>
+      <div class="bx"><h5>停车位</h5><p>大巴 <b>2</b> + 小车 <b>20</b>；不足时给拼车与村口临时场方案。</p></div>
+    </div>
+  </div>
+  <div class="footnote"><b>失败点与兜底：</b>①讲解员临时缺席 → 后备库自动派单，10 分钟未接则通知村委人工调度；②雨天 → 稻田课堂自动替换为"粮仓里的数学课"（室内）；③人数临时变更 → 行前 72 小时可免费改一次，系统按差额补退。</div>
+  <div class="ft"><span>薪火仁义 · 天全县仁义镇红色研学与在地体验</span><span>设计图版 02 / 05</span></div>
+</section>
+
+<!-- ============ 3 信息架构 ============ -->
+<section class="sheet" id="ia">
+  <div class="hd">
+    <div class="l"><span class="no">03</span><h1>信息架构</h1><span class="sub">4 个一级入口 / 18 个页面 / 3 类角色</span></div>
+    <div class="r">一级入口不超过 4 个<br>任一核心任务 ≤ 3 次点击</div>
+  </div>
+
+  <div class="iawrap">
+    <div class="ia-col">
+      <div class="top">首页 <span>发现与决策</span></div>
+      <ul>
+        <li>今日可约<span>时段余量</span></li>
+        <li>红色研学课程<span>半日/一日/两日</span></li>
+        <li>八个遗址 · 四个村<span>一村一品</span></li>
+        <li>在地体验<span>非遗/农事</span></li>
+        <li>红军食堂 · 民宿<span>吃住</span></li>
+        <li>仁义风物<span>助农商城</span></li>
+      </ul>
+    </div>
+    <div class="ia-col">
+      <div class="top">红色地图 <span>空间与打卡</span></div>
+      <ul>
+        <li>三条线路<span>徒步/车行/骑行</span></li>
+        <li>村簇点位<span>8 处遗址</span></li>
+        <li>点位详情<span>故事 + 语音</span></li>
+        <li>到此打卡<span>50m 校验</span></li>
+        <li>附近吃住<span>30m 内</span></li>
+      </ul>
+    </div>
+    <div class="ia-col">
+      <div class="top">行程 <span>执行与核销</span></div>
+      <ul>
+        <li>时间轴<span>7 个节点</span></li>
+        <li>核销码<span>集合出示</span></li>
+        <li>导航与联系讲解员<span>一键</span></li>
+        <li>行前准备<span>清单</span></li>
+        <li>分享给班级群<span>含任务</span></li>
+      </ul>
+    </div>
+    <div class="ia-col">
+      <div class="top">我的 <span>资产与身份</span></div>
+      <ul>
+        <li>订单<span>待付/待行/待评</span></li>
+        <li>集章册<span>8 枚</span></li>
+        <li>研学证书<span>可核验</span></li>
+        <li>我的团队<span>42 人</span></li>
+        <li>村民 / 商户入口<span>切换身份</span></li>
+        <li>运营看板<span>镇村管理员</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="roles">
+    <div class="role">
+      <h4><i>游</i>游客 / 组织者</h4>
+      <p><b>任务：</b>一次把一个班 40 人安全、有内容地带来又带走。<br><b>要什么：</b>确定的排程、可核销的凭证、能给学校交差的证明。</p>
+    </div>
+    <div class="role">
+      <h4><i>户</i>村民 / 商户</h4>
+      <p><b>任务：</b>接单、备餐、核销、看钱。<b>不要培训、不要电脑。</b><br><b>要什么：</b>一个按钮完成核销，结算清楚到账。</p>
+    </div>
+    <div class="role">
+      <h4><i>管</i>镇 / 村管理员</h4>
+      <p><b>任务：</b>调度讲解员、避免撞场、算清村集体分成。<br><b>要什么：</b>冲突预警与一张能上报的表。</p>
+    </div>
+  </div>
+
+  <div class="band">
+    <div class="bt">内容从哪里来（前台看到的每一句话都有来源）</div>
+    <div class="row four" style="grid-template-columns:repeat(4,1fr)">
+      <div class="bx"><h5>村史馆 / 县委党校</h5><p>遗址点位讲解词、情景课讲稿、红军井等口述史；<b>每季度校订一次</b>。</p></div>
+      <div class="bx"><h5>镇文旅办</h5><p>线路、容量、价格与安全规范；<b>发布前审核</b>，变更走版本记录。</p></div>
+      <div class="bx"><h5>村集体 / 合作社</h5><p>餐位、床位、体验物料与农户排班；<b>供给端唯一入口</b>。</p></div>
+      <div class="bx"><h5>游客 UGC</h5><p>照片、评价、打卡足迹；<b>仅作展示，不进入讲解词</b>，避免史实失真。</p></div>
+    </div>
+  </div>
+
+  <div class="footnote"><b>为什么是 4 个 Tab：</b>把"预约"从 Tab 里拿掉，做成任何页面都能进的流程（课程 → 日期 → 排程 → 支付）；Tab 只留"看什么、在哪、什么时候去、我的东西"四件事。</div>
+  <div class="ft"><span>薪火仁义 · 天全县仁义镇红色研学与在地体验</span><span>设计图版 03 / 05</span></div>
+</section>
+
+<!-- ============ 4 核心流程 ============ -->
+<section class="sheet" id="flow">
+  <div class="hd">
+    <div class="l"><span class="no">04</span><h1>核心交互流程</h1><span class="sub">从"选日期"到"盖章核销"的一条主线</span></div>
+    <div class="r">7 步 · 3 条泳道<br>其中 2 步由系统自动完成</div>
+  </div>
+
+  <div class="lane">
+    <div class="lb">游客<br>组织者</div>
+    <div class="node"><span class="num">1</span><b>选课程</b>课程详情：6.5h / 3.2km / 8 处遗址</div>
+    <div class="node"><span class="num">2</span><b>选日期人数</b>5/20 · 40 人 · 加豆花</div>
+    <div class="node hi"><span class="num">3</span><b>看排程</b>四项资源齐备 + 错峰建议</div>
+    <div class="node"><span class="num">4</span><b>填信息</b>联系人 / 素食 / 无障碍</div>
+    <div class="node"><span class="num">5</span><b>付订金</b>20% · 微信支付</div>
+    <div class="node"><span class="num">6</span><b>到场核销</b>出示 XY-…-006</div>
+    <div class="node hi"><span class="num">7</span><b>打卡集章</b>第 8 枚 → 证书</div>
+  </div>
+  <div class="lane">
+    <div class="lb g">村民<br>商户</div>
+    <div class="node ghost"><b>—</b>不参与售前</div>
+    <div class="node ghost"><b>—</b></div>
+    <div class="node" style="background:rgba(62,91,69,.08)"><b>收到派单</b>红军餐 40 位 · 11:30</div>
+    <div class="node ghost"><b>—</b></div>
+    <div class="node ghost"><b>—</b></div>
+    <div class="node" style="background:rgba(62,91,69,.08)"><b>扫码核销</b>40 人 · 一单一次</div>
+    <div class="node" style="background:rgba(62,91,69,.08)"><b>看结算</b>本单 +¥1,260</div>
+  </div>
+  <div class="lane">
+    <div class="lb y">后台<br>系统</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>库存日历</b>讲解员 / 餐位 / 教室 / 车位</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>资源匹配</b>四项同时比对，给错峰</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>锁位 30 分钟</b>下单即占用，超时释放</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>生成订单</b>校验 20 人起订</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>支付回调</b>出凭证 + 核销码</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>核销回写</b>状态 / 库存 / 分账</div>
+    <div class="node" style="background:rgba(184,137,63,.1)"><b>签发证书</b>一证一码 + 打卡校验</div>
+  </div>
+
+  <div class="band" style="margin-top:18px">
+    <div class="bt">订单状态机（每一步都有回退与超时规则）</div>
+    <div class="states">
+      <div class="st"><b>待支付</b>锁位中</div><div class="ar">→</div>
+      <div class="st"><b>已付订金</b>排程生效</div><div class="ar">→</div>
+      <div class="st"><b>待出行</b>行前包已发</div><div class="ar">→</div>
+      <div class="st on"><b>已核销</b>服务履约</div><div class="ar">→</div>
+      <div class="st on"><b>已完成</b>证书已签发</div><div class="ar">↘</div>
+      <div class="st"><b>已取消</b>按规则退订金</div>
+    </div>
+  </div>
+
+  <div class="dia">
+    <div class="dbox">
+      <h4>关键规则（写进系统，不靠人记）</h4>
+      <ul>
+        <li>20 人起订；单讲解员带队上限 40 人，超 40 自动派第二人</li>
+        <li>锁位 30 分钟，超时自动释放并提醒</li>
+        <li>行前 7 天免费取消，72 小时内改期限一次</li>
+        <li>打卡需在遗址 50m 内且有当日核销记录，否则不予盖章</li>
+      </ul>
+    </div>
+    <div class="dbox">
+      <h4>三处"防错"设计</h4>
+      <ul>
+        <li><b>餐位余量前置</b>：不让人填完表单才发现没饭</li>
+        <li><b>车位预警</b>：大巴位不足时给拼车方案，而不是现场乱停</li>
+        <li><b>证书绑定核销</b>：没到过现场，盖不出章、也生不成证</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft"><span>薪火仁义 · 天全县仁义镇红色研学与在地体验</span><span>设计图版 04 / 05</span></div>
+</section>
+
+<!-- ============ 5 设计过程 ============ -->
+<section class="sheet" id="process">
+  <div class="hd">
+    <div class="l"><span class="no">05</span><h1>设计过程</h1><span class="sub">双钻模型：两次发散、两次收敛</span></div>
+    <div class="r">2025.10 – 2026.04<br>6 个阶段 · 4 轮迭代</div>
+  </div>
+
+  <div class="proc">
+    <div class="step">
+      <div class="k">STAGE 01</div>
+      <h3>场域调研</h3>
+      <p>走完全部 8 处遗址与 13 个村，记录动线、标识、停留时长；访谈<b>讲解员、食堂、村支书、镇文旅办</b>。</p>
+      <div class="out">产出：点位清单 / 动线草图 / 接待容量表</div>
+    </div>
+    <div class="step">
+      <div class="k">STAGE 02</div>
+      <h3>用户研究</h3>
+      <p>深度访谈 12 人（学校 3 / 家长 4 / 党建 2 / 村民 3），问卷 156 份，跟拍 3 个团队。<b>发现：不是没内容，是没人把内容排成能下单的一天。</b></p>
+      <div class="out">产出：旅程图 / 痛点聚类 / 5 条洞察</div>
+    </div>
+    <div class="step">
+      <div class="k">STAGE 03</div>
+      <h3>定义问题</h3>
+      <p>把"文旅 + 研学 + 民宿 + 非遗"收成一个可交付的服务单元：<b>「一日粮仓」</b>——四件事、8 枚章、一张证书。</p>
+      <div class="out">产出：设计策略 5 条 / 概念命名</div>
+    </div>
+    <div class="step">
+      <div class="k">STAGE 04</div>
+      <h3>服务设计</h3>
+      <p>画服务蓝图、定三方角色与分账规则；把"排程"做成产品核心能力，而不是后台功能。</p>
+      <div class="out">产出：蓝图 / IA / 3 条泳道流程</div>
+    </div>
+    <div class="step">
+      <div class="k">STAGE 05</div>
+      <h3>界面与交互</h3>
+      <p>18 个界面、4 套组件、1 套印章与证书视觉；核心交互做成<b>可点击原型</b>，供 5 人走查。</p>
+      <div class="out">产出：高保真原型 / 组件库 / 标注</div>
+    </div>
+    <div class="step">
+      <div class="k">STAGE 06</div>
+      <h3>测试与迭代</h3>
+      <p>5 人可用性测试 + 村委 2 人走查：改掉"排程像后台报表""村民找不到核销"等 3 处关键问题。</p>
+      <div class="out">产出：测试记录 / 迭代清单 / 指标</div>
+    </div>
+  </div>
+
+  <div class="band" style="margin-top:18px">
+    <div class="bt">时间线</div>
+    <div class="timeline">
+      <div class="tl-i"><div class="d">2025.10</div><div class="t">场域调研<br>走完 8 处遗址</div></div>
+      <div class="tl-i"><div class="d">2025.11</div><div class="t">访谈 12 人<br>问卷 156 份</div></div>
+      <div class="tl-i"><div class="d">2025.12</div><div class="t">痛点聚类<br>旅程图 v1</div></div>
+      <div class="tl-i"><div class="d">2026.01</div><div class="t">概念定稿<br>「一日粮仓」</div></div>
+      <div class="tl-i"><div class="d">2026.02</div><div class="t">服务蓝图<br>信息架构</div></div>
+      <div class="tl-i"><div class="d">2026.03</div><div class="t">原型 v1<br>5 人测试</div></div>
+      <div class="tl-i"><div class="d">2026.04</div><div class="t">迭代 v2<br>出图版</div></div>
+    </div>
+  </div>
+
+  <div class="dia">
+    <div class="dbox">
+      <h4>五条设计策略</h4>
+      <ul>
+        <li><b>把服务做成 SKU</b>：一个课程 = 讲解 + 餐 + 体验 + 场地 + 保险</li>
+        <li><b>排程即产品</b>：四类资源实时比对，先给方案再让人填表</li>
+        <li><b>用轻动作带走重体验</b>：打卡、集章、证书，把 2 小时拉成 6.5 小时</li>
+        <li><b>让村民只做一件事</b>：一个核销按钮，其余自动</li>
+        <li><b>把红色讲进土地里</b>：粮仓、稻田、豆花，都是可参与的教材</li>
+      </ul>
+    </div>
+    <div class="dbox">
+      <h4>验证与迭代（节选）</h4>
+      <ul>
+        <li>原"排程结果页"像后台报表 → 改为<b>四项资源 + 一句人话建议</b>，任务完成 96s → 41s</li>
+        <li>原"村民端"入口在三级菜单 → 提到"我的"第二屏，<b>核销成功率 60% → 100%</b></li>
+        <li>原证书只写姓名 → 增加<b>徒步里程、打卡数与核验码</b>，学校认可度提升</li>
+        <li>未通过项：地图首屏加载 2.4s（待离线瓦片优化）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft"><span>薪火仁义 · 天全县仁义镇红色研学与在地体验</span><span>设计图版 05 / 05</span></div>
+</section>
+
+<div class="gnav">
+  <a href="#journey">01 旅程图</a><a href="#blueprint">02 服务蓝图</a><a href="#ia">03 信息架构</a><a href="#flow">04 核心流程</a><a href="#process">05 设计过程</a>
+</div>
+<script>if(!location.hash) location.hash = 'journey';</script>
+</body>
+</html>
+
+
+
+
+
