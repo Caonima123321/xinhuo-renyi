@@ -114,22 +114,34 @@ def qr_svg(text):
         return ""
 
 
-APPMODE_CSS = b"""<style id="appmode">
-body.bare{overflow:hidden}
+APPMODE_CSS = ("""<style id="appmode">
+/* 与设计稿 1:1：始终是 390x844 的画布，按设备等比缩放，不拉伸、不改版式 */
+body.bare{overflow:hidden;background:var(--paper)}
 body.bare .stage{display:flex;justify-content:center;align-items:center;padding:0;min-height:100dvh}
 @media (max-width:560px){
-  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--paper)}
   body{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  body.bare .stage{display:block;width:100vw;height:100dvh;min-height:0;padding:0}
-  body.bare .device{width:100vw;height:100dvh}
-  body.bare .phone{width:100vw;height:100dvh;padding:0;transform:none !important}
-  body.bare .screenwrap{width:100%;height:100%;border-radius:0}
-  body.bare .statusbar{display:none}
+  body.bare .stage{height:100dvh;min-height:0;overflow:hidden}
+  body.bare .phone{transform-origin:center center}
   body.bare .screen{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-  body.bare .tabbar{height:calc(56px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
-  body.bare .dock{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 }
-</style>"""
+</style>""").encode("utf-8")
+
+APPMODE_JS = ("""<script>
+(function(){
+  function fit(){
+    var ph=document.querySelector('.phone');
+    if(!ph){return;}
+    if(innerWidth>560){ ph.style.transform=''; return; }
+    var s=Math.min(innerWidth/390, innerHeight/844);
+    ph.style.transform = (s>0.2 && Math.abs(s-1)>0.002) ? 'scale('+s+')' : '';
+  }
+  window.addEventListener('resize',fit);
+  window.addEventListener('orientationchange',fit);
+  if(document.readyState!=='loading'){fit();} else {document.addEventListener('DOMContentLoaded',fit);}
+  setTimeout(fit,120); setTimeout(fit,700);
+})();
+</script>""").encode("utf-8")
 
 JOIN_HTML = """<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
