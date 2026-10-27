@@ -551,6 +551,13 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
 .chip.off{cursor:not-allowed}
 #dateChips .chip.pick{animation:chipPop .28s ease}
 @keyframes chipPop{0%{transform:scale(.94)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+/* ---------- 自适应：窄窗口隐藏讲解面板 ---------- */
+@media (max-width:1180px){
+  body{display:block;padding:0}
+  .panel{display:none}
+  .stage{display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;min-height:100dvh}
+}
 </style>
 
 
