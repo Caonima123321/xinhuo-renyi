@@ -115,25 +115,25 @@ def qr_svg(text):
 
 
 APPMODE_CSS = ("""<style id="appmode">
-/* 与设计稿 1:1：始终是 390x844 的画布，按设备等比缩放，不拉伸、不改版式 */
-body.bare{overflow:hidden;background:var(--paper)}
-body.bare .stage{display:flex;justify-content:center;align-items:center;padding:0;min-height:100dvh}
-@media (max-width:560px){
-  html,body{height:100%;overflow:hidden;overscroll-behavior:none;background:var(--paper)}
-  body{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-  body.bare .stage{height:100dvh;min-height:0;overflow:hidden}
-  body.bare .phone{transform-origin:center center}
-  body.bare .screen{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-}
+/* 线上/扫码：只留手机本体（含边框与灵动岛），去掉左侧讲解导航；整机等比缩放，不裁切 */
+.panel{display:none}
+html,body{height:100%;margin:0}
+body{display:flex;align-items:center;justify-content:center;padding:0;
+     background:#17140F;background-image:radial-gradient(1200px 700px at 25% 0%,#2C261D 0%,#17140F 62%);
+     overflow:hidden}
+.stage{display:flex;align-items:center;justify-content:center;padding:0;min-height:0;height:100dvh}
+.phone{transform-origin:center center}
+body{-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.screen{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 </style>""").encode("utf-8")
 
 APPMODE_JS = ("""<script>
 (function(){
+  var W=410, H=864, PAD=16;
   function fit(){
     var ph=document.querySelector('.phone');
     if(!ph){return;}
-    if(innerWidth>560){ ph.style.transform=''; return; }
-    var s=Math.min(innerWidth/390, innerHeight/844);
+    var s=Math.min((innerWidth-PAD)/W, (innerHeight-PAD)/H, 1);
     ph.style.transform = (s>0.2 && Math.abs(s-1)>0.002) ? 'scale('+s+')' : '';
   }
   window.addEventListener('resize',fit);
@@ -216,7 +216,7 @@ class Handler(BaseHTTPRequestHandler):
                 with open(PAGE, "rb") as f:
                     html = f.read()
                 # 线上/联机打开时直接进「小程序模式」：去掉外侧流程导航，手机端铺满
-                html = html.replace(b"<body>", b'<body class="bare">', 1)
+                pass  # 保留机身边框，不注入 bare
                 html = html.replace(b"</head>", APPMODE_CSS + b"</head>", 1)
                 html = html.replace(b"</body>", APPMODE_JS + b"</body>", 1)
                 self._send(200, html, "text/html; charset=utf-8")
