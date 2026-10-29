@@ -558,6 +558,23 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
   .panel{display:none}
   .stage{display:flex;align-items:flex-start;justify-content:center;padding:24px 12px;min-height:100dvh}
 }
+
+/* ===== 季节限定 ===== */
+.seasonbox{margin:0 0 12px;background:#fff;border-radius:16px;padding:12px 13px 13px;box-shadow:0 0 0 1px var(--line),0 8px 22px -22px rgba(35,30,25,.8)}
+.seasonbox .sh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.seasonbox .sh b{font-family:var(--serif);font-size:15px;letter-spacing:.03em}
+.seasonbox .sh span{font-size:9.5px;color:var(--ink3);text-align:right;max-width:52%;line-height:1.4}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.scard{position:relative;border-radius:12px;padding:9px 11px 10px;background:#FBF7EF;box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;cursor:pointer;transition:.16s}
+.scard:active{transform:scale(.985)}
+.scard.on{background:linear-gradient(180deg,#FBEFE2,#F8E4CE);box-shadow:inset 0 0 0 1.5px var(--red)}
+.scard .kk{font-family:var(--serif);font-size:25px;line-height:1;color:var(--red);opacity:.92}
+.scard .mm{font-size:9px;color:var(--ink3);letter-spacing:.03em;margin-top:2px}
+.scard .nm{font-family:var(--serif);font-size:12.5px;margin-top:6px;letter-spacing:.01em;line-height:1.25}
+.scard .mt{font-size:9.5px;color:var(--ink3);margin-top:3px}
+.scard .now{position:absolute;right:8px;top:8px;font-size:8.5px;padding:2px 5px;border-radius:4px;background:var(--red);color:#fff;letter-spacing:.06em}
+.scard .bub{position:absolute;right:-18px;bottom:-20px;width:62px;height:62px;border-radius:50%;background:var(--gold-soft);opacity:.6}
+.spill{display:inline-block;margin-left:5px;font-size:8.5px;padding:1.5px 5px;border-radius:4px;background:var(--gold-soft);color:#8E6A24;vertical-align:1px;font-weight:600;letter-spacing:.02em}
 </style>
 
 
@@ -1090,7 +1107,7 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
             <div class="hd">
               <div class="st">待出行 · 距出发 <span data-jsgap>3</span> 天</div>
               <h3>重走长征路 · 一日粮仓</h3>
-              <div class="meta"><span><span data-jspeople>40</span> 人 · 学校研学团</span><span>09:00 集合</span></div>
+              <div class="meta"><span><span data-jspeople>40</span> 人 · 学校研学团</span><span>09:00 集合</span><span id="tripDur">6.5 小时</span></div>
             </div>
             <div class="tl">
               <div class="ti done"><div class="tm">08:40</div><h4>红军村游客中心集合</h4><p>大巴停 2 号位，讲解员李幺妹在门口举牌</p><div class="who">📍 距你 1.2km · 导航</div></div>
@@ -1099,7 +1116,8 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
               <div class="ti"><div class="tm">10:40</div><h4>红军井 · 打一桶水</h4><p>王定国挖井的故事，现场打水、尝水</p></div>
               <div class="ti"><div class="tm">12:00</div><h4>红军食堂 · 忆苦思甜餐</h4><p>红薯饭、南瓜汤、炒盐菜；缘井小院 2 楼</p></div>
               <div class="ti"><div class="tm">14:00</div><h4>石磨豆花 · 军民一家</h4><p>分 4 组推磨、点卤，出锅后分食</p></div>
-              <div class="ti"><div class="tm">16:30</div><h4>结营 · 颁证</h4><p>集满 8 枚印章，现场生成电子研学证书</p></div>
+              <div class="ti" id="tiSeason" style="display:none"></div>
+              <div class="ti" id="tiEnd"><div class="tm">16:30</div><h4>结营 · 颁证</h4><p>集满 8 枚印章，现场生成电子研学证书</p></div>
             </div>
             <div class="codebox">
               <div class="no" data-jsord>XY-20260520-006</div>
@@ -1257,6 +1275,16 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
               <button class="chip" onclick="pickType(this,'自由行')">自由行</button>
             </div>
             <p class="tiny dim" style="margin:9px 0 0" id="typeHint">学校研学：需 1 名老师随队，配 1 名讲解员 + 1 名安全员</p>
+
+            <div class="sec" style="padding:0;margin:22px 0 8px"><div class="t"><h3>季节限定农事</h3></div><span class="tiny dim">可加一段 · 时长另计</span></div>
+            <div class="chips" id="seasonChips" style="gap:7px">
+              <button class="chip" data-season="" onclick="pickSeason(this,'')">不加</button>
+              <button class="chip on" data-season="春" onclick="pickSeason(this,'春')">春 · 插秧 ¥45</button>
+              <button class="chip" data-season="夏" onclick="pickSeason(this,'夏')">夏 · 抓鱼 ¥35</button>
+              <button class="chip" data-season="秋" onclick="pickSeason(this,'秋')">秋 · 割稻 ¥30</button>
+              <button class="chip" data-season="冬" onclick="pickSeason(this,'冬')">冬 · 挖薯 ¥35</button>
+            </div>
+            <p class="tiny dim" style="margin:9px 0 0" id="seasonHint">按出行月份选，可加一段农事</p>
 
             <div class="sec" style="padding:0;margin:24px 0 6px"><div class="t"><h3>要不要加点</h3></div><span class="tiny dim">可多选</span></div>
             <div class="card" style="padding:4px 16px">
@@ -1623,7 +1651,13 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
 
         <!-- ========== 15 在地体验 ========== -->
         <section class="screen" data-screen="exp" data-title="在地体验">
-          <div class="tabline" id="expTabs"><b class="on" data-cat="all" onclick="pickExpCat(this)">全部</b><b data-cat="非遗" onclick="pickExpCat(this)">非遗</b><b data-cat="农事" onclick="pickExpCat(this)">农事</b><b data-cat="讲解" onclick="pickExpCat(this)">讲解</b></div>
+          <div class="tabline" id="expTabs"><b class="on" data-cat="all" onclick="pickExpCat(this)">全部</b><b data-cat="非遗" onclick="pickExpCat(this)">非遗</b><b data-cat="农事" onclick="pickExpCat(this)">农事</b><b data-cat="讲解" onclick="pickExpCat(this)">讲解</b><b data-cat="季节" onclick="pickExpCat(this)">季节</b></div>
+          <div class="pad" style="margin-top:12px">
+            <div class="seasonbox">
+              <div class="sh"><b>季节限定 · 跟着节气做农事</b><span id="seasonTip">当季 · 可加 1 段</span></div>
+              <div class="sgrid" id="seasonGrid"></div>
+            </div>
+          </div>
           <div class="pad" style="margin-top:12px">
             <p class="tiny dim" id="expCount" style="margin:0 0 10px"></p>
             <div id="expList"></div>
@@ -1882,7 +1916,7 @@ const CLUSTERS = {
   ]}
 };
 
-const state = { stamps:7, people:40, date:20, type:'学校研学', addons:{tofu:true,photo:false,meal:false} };
+const state = { stamps:7, people:40, date:20, type:'学校研学', season:'春', addons:{tofu:true,photo:false,meal:false} };
 
 /* ===================== 路由 ===================== */
 let stack = [];
@@ -2028,6 +2062,8 @@ function renderPay(){
   if(state.addons.tofu){ total += p*28; rows.push(`<div class="r"><span>石磨豆花 ${p} 人 × ¥28</span><span>¥${(p*28).toLocaleString()}</span></div>`); }
   if(state.addons.photo){ total += 300; rows.push(`<div class="r"><span>摄影跟拍 1 场</span><span>¥300</span></div>`); }
   if(state.addons.meal){ total += p*15; rows.push(`<div class="r"><span>红军餐升级 ${p} 人 × ¥15</span><span>¥${(p*15).toLocaleString()}</span></div>`); }
+  const _s = state.season ? SEASON.filter(x=>x.k===state.season)[0] : null;
+  if(_s){ total += p*_s.p; rows.push(`<div class="r"><span>${_s.k}季限定 · ${_s.n} ${p} 人 × ¥${_s.p}</span><span>¥${(p*_s.p).toLocaleString()}</span></div>`); }
   rows.push(`<div class="r"><span>保险 · 物料</span><span>¥0</span></div>`);
   rows.push(`<div class="r tot"><span>应付总额</span><b>¥${total.toLocaleString()}</b></div>`);
   const box = document.getElementById('paySum');
@@ -2055,10 +2091,10 @@ const EXP = [
  {c:'非遗', n:'土司祠拓印 · 一方砖', d:'老场村杨家土司祠堂（省级文保），拓一张带回家。', m:'45 分钟 · 15 人 · 需预约', p:38, img:'--ph-exp-rub',
   ic:'<rect x="16" y="20" width="40" height="34" rx="2"/><path d="M24 30h24M24 38h24M24 46h16"/>',
   t:'土司祠拓印：杨家土司祠堂（省级文保），拓一方「仁义」砖'},
- {c:'农事', n:'稻田摸鱼 · 共和村', d:'稻渔综合种养田里下田摸鱼，含冲洗、姜茶、装鱼袋。', m:'60 分钟 · 6–9 月开放', p:35, img:'--ph-exp-fish',
+ {c:'农事', sn:'夏', n:'稻田摸鱼 · 共和村', d:'稻渔综合种养田里下田摸鱼，含冲洗、姜茶、装鱼袋。', m:'60 分钟 · 6–9 月开放', p:35, img:'--ph-exp-fish',
   ic:'<path d="M8 44c10-8 20-8 30 0s20 8 28 0"/><path d="M8 52c10-8 20-8 30 0s20 8 28 0"/><circle cx="52" cy="30" r="5"/>',
   t:'稻田摸鱼：稻渔综合种养田，6–9 月开放，含冲洗与姜茶'},
- {c:'农事', n:'割稻打谷 · 粮仓田坝', d:'镰刀、拌桶、风车全套上手，打完带走一袋当季新米。', m:'90 分钟 · 9–10 月开放 · 20 人成团', p:30, img:'--ph-g-rice',
+ {c:'农事', sn:'秋', n:'割稻打谷 · 粮仓田坝', d:'镰刀、拌桶、风车全套上手，打完带走一袋当季新米。', m:'90 分钟 · 9–10 月开放 · 20 人成团', p:30, img:'--ph-g-rice',
   ic:'<path d="M20 52c8-10 14-18 22-24"/><path d="M32 30l6-8M36 34l9-4M27 36l-2-9"/><path d="M14 56h38"/>',
   t:'割稻打谷：粮仓田坝，9–10 月开放，含农具与一袋新米'},
  {c:'农事', n:'荷塘采莲 · 大田村', d:'撑小舟进荷塘采莲蓬，剥莲子、煨藕汤，一人带走一袋。', m:'60 分钟 · 7–8 月开放 · 15 人成团', p:35, img:'--ph-g-rose',
@@ -2069,10 +2105,85 @@ const EXP = [
   t:'深度讲解：讲解员带队 90 分钟走完 5 处遗址，¥15/人'},
  {c:'讲解', n:'红军大学旧址情景课', d:'县委党校讲师主讲，40 分钟一堂，需提前 3 天约。', m:'40 分钟 · 每周二、四 · 20 人起', p:20, img:'--ph-v-hongyan',
   ic:'<rect x="20" y="24" width="32" height="24" rx="2"/><path d="M28 54h16M36 48v6"/><path d="M26 32h20M26 39h14"/>',
-  t:'情景课：县委党校讲师主讲 40 分钟，需提前 3 天预约'}
+  t:'情景课：县委党校讲师主讲 40 分钟，需提前 3 天预约'},
+ {c:'农事', sn:'春', n:'插秧 · 种水稻', d:'赤脚下田拉线插秧，认领一垄自己的稻，秋收时寄新米到家。', m:'120 分钟 · 3—5 月限定 · 20 人成团', p:45, img:'--ph-cover-poi',
+  ic:'<path d="M18 54c6-14 10-20 18-24"/><path d="M28 32l8-6M32 38l9-2M24 40l-2-10"/><path d="M12 58h44"/>',
+  t:'插秧种稻：3—5 月限定，120 分钟，认领一垄稻，秋收寄新米'},
+ {c:'农事', sn:'冬', n:'挖红薯 · 土窑烤', d:'坡地挖薯、垒土窑烤，一人带一袋红薯回去。', m:'90 分钟 · 12—2 月限定 · 20 人成团', p:35, img:'--ph-exp-tofu',
+  ic:'<path d="M24 30c10-6 20 0 20 10s-8 16-18 16-16-6-16-14 6-10 14-12z"/><path d="M30 22c4-6 12-6 14 0"/>',
+  t:'挖红薯：12—2 月限定，90 分钟，含土窑烤与一袋红薯'}
 ];
+/* ===================== 季节限定 ===================== */
+const SEASON = [
+ {k:'春', mm:'3—5 月 · 春耕', n:'插秧 · 种水稻', d:'赤脚下田拉线插秧，认领一垄自己的稻，秋收寄新米', t:'120 分钟', p:45, img:'--ph-g-rice'},
+ {k:'夏', mm:'6—9 月 · 夏长', n:'水稻抓鱼', d:'稻渔田里摸稻花鱼，含冲洗、姜茶、装鱼袋', t:'60 分钟', p:35, img:'--ph-exp-fish'},
+ {k:'秋', mm:'9—11 月 · 秋收', n:'割稻 · 打谷', d:'镰刀、拌桶、风车全套上手，带走一袋新米', t:'90 分钟', p:30, img:'--ph-g-rice'},
+ {k:'冬', mm:'12—2 月 · 冬藏', n:'挖红薯 · 土窑烤', d:'坡地挖薯、垒土窑烤，一人带一袋回去', t:'90 分钟', p:35, img:'--ph-exp-folk'}
+];
+const DEMO_MONTH = 5;   /* 预约页演示月份：五月 */
+function curSeason(){ const m=DEMO_MONTH; return m<=2?'冬':(m<=5?'春':(m<=8?'夏':'秋')); }
+function seasonWarn(k){ return k && k!==curSeason() ? ('（' + DEMO_MONTH + ' 月是' + curSeason() + '季，建议改选' + curSeason() + '）') : ''; }
+
+function renderTripSeason(){
+  const box=document.getElementById('tiSeason'); if(!box) return;
+  const s = state.season ? SEASON.filter(x=>x.k===state.season)[0] : null;
+  const end=document.getElementById('tiEnd');
+  const dur=document.getElementById('tripDur');
+  if(!s){
+    box.style.display='none';
+    if(end) end.querySelector('.tm').textContent='16:30';
+    if(dur) dur.textContent='6.5 小时';
+    return;
+  }
+  box.style.display='';
+  box.innerHTML = '<div class="tm">' + (s.k==='秋'?'15:10':'15:20') + '</div>'
+    + '<h4>' + s.k + '季限定 · ' + s.n + '</h4>'
+    + '<p>' + s.t + ' · ' + s.d + '</p>'
+    + '<div class="who">🎫 已含在订单里</div>';
+  if(end) end.querySelector('.tm').textContent = '17:30';
+  if(dur) dur.textContent = '8 小时 · 含' + s.k + '季限定';
+}
+function renderSeason(){
+  const box=document.getElementById('seasonGrid'); if(!box) return;
+  const now=curSeason();
+  box.innerHTML = SEASON.map(s=>`<div class="scard ${s.k===now?'on':''}" onclick="pickSeasonCard('${s.k}')">
+    <div class="bub"></div>${s.k===now?'<span class="now">当季</span>':''}
+    <div class="kk">${s.k}</div><div class="mm">${s.mm}</div>
+    <div class="nm">${s.n}</div><div class="mt">${s.t} · ¥${s.p}/人</div>
+  </div>`).join('');
+  const tip=document.getElementById('seasonTip');
+  if(tip) tip.textContent = '当前' + now + '季 · 加一段最长 8 小时';
+}
+function pickSeasonCard(k){
+  state.season = k;
+  const s = SEASON.filter(x=>x.k===k)[0];
+  document.querySelectorAll('#seasonChips .chip').forEach(c=>{
+    c.classList.toggle('on', c.dataset.season === k);
+  });
+  const hint=document.getElementById('seasonHint');
+  if(hint) hint.textContent = '已加 ' + k + '季 · ' + s.n + ' · ' + s.t + '，一日游延长至 8 小时' + seasonWarn(k);
+  renderSeason(); renderTripSeason();
+  const on=document.getElementById('seasonGrid').querySelectorAll('.scard');
+  calc();
+  toast(k + '季限定：' + s.n + ' · ' + s.t + ' · ¥' + s.p + '/人' + seasonWarn(k));
+}
+function pickSeason(el,k){
+  document.querySelectorAll('#seasonChips .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  state.season = k || '';
+  const hint=document.getElementById('seasonHint');
+  if(hint){
+    if(k){ const s=SEASON.filter(x=>x.k===k)[0];
+      hint.textContent='已加 ' + k + '季 · ' + s.n + ' · ' + s.t + '，一日游延长至 8 小时' + seasonWarn(k); }
+    else hint.textContent='按出行月份选，可加一段农事';
+  }
+  renderSeason(); renderTripSeason();
+  calc();
+}
+
 function renderExp(cat){
-  const list = (!cat || cat === 'all') ? EXP : EXP.filter(x=>x.c === cat);
+  const list = (!cat || cat === 'all') ? EXP
+             : (cat === '季节' ? EXP.filter(x=>x.sn) : EXP.filter(x=>x.c === cat));
   const box = document.getElementById('expList');
   if(!box) return;
   box.innerHTML = list.map(x=>`
@@ -2081,13 +2192,16 @@ function renderExp(cat){
         <svg viewBox="0 0 72 72" style="position:absolute;inset:0;width:100%;height:100%;opacity:.3" fill="none" stroke="#fff" stroke-width=".8">${x.ic}</svg>
       </div>
       <div class="in">
-        <h4>${x.n}</h4>
+        <h4>${x.n}${x.sn?`<span class="spill">${x.sn}季限定</span>`:''}</h4>
         <p>${x.d}</p>
         <div class="bt"><span class="tiny dim">${x.m}</span><span class="price" style="font-size:15px">¥${x.p}</span></div>
       </div>
     </div>`).join('');
   const cnt = document.getElementById('expCount');
-  if(cnt) cnt.textContent = (!cat || cat === 'all') ? ('共 ' + EXP.length + ' 项 · 由 12 户村民提供') : (cat + ' · ' + list.length + ' 项');
+  const snc = EXP.filter(x=>x.sn).length;
+  if(cnt) cnt.textContent = (!cat || cat === 'all')
+      ? ('共 ' + EXP.length + ' 项 · 季节限定 ' + snc + ' 项 · 由 12 户村民提供')
+      : (cat + ' · ' + list.length + ' 项');
 }
 function pickExpCat(el){
   Array.prototype.forEach.call(el.parentElement.children, b=>b.classList.remove('on'));
@@ -2129,6 +2243,8 @@ function calc(){
   if(state.addons.tofu){ total += p*28; rows.push(`<div class="r"><span>石磨豆花 ${p} 人 × ¥28</span><span>¥${(p*28).toLocaleString()}</span></div>`); }
   if(state.addons.photo){ total += 300; rows.push(`<div class="r"><span>摄影跟拍 1 场</span><span>¥300</span></div>`); }
   if(state.addons.meal){ total += p*15; rows.push(`<div class="r"><span>红军餐升级 ${p} 人 × ¥15</span><span>¥${(p*15).toLocaleString()}</span></div>`); }
+  const _s = state.season ? SEASON.filter(x=>x.k===state.season)[0] : null;
+  if(_s){ total += p*_s.p; rows.push(`<div class="r"><span>${_s.k}季限定 · ${_s.n} ${p} 人 × ¥${_s.p}</span><span>¥${(p*_s.p).toLocaleString()}</span></div>`); }
   rows.push(`<div class="r tot"><span>合计</span><b>¥${total.toLocaleString()}</b></div>`);
   document.getElementById('sumBox').innerHTML = rows.join('');
   const t2 = document.getElementById('totalPrice2');
@@ -2295,7 +2411,7 @@ function syncProgress(){
   if(!rp) return;
 }
 window.addEventListener('load', ()=>{
-  renderStamps(); renderDates(); applyDate(); calc(); renderPay(); renderExp('all'); netInit();
+  renderStamps(); renderDates(); applyDate(); calc(); renderPay(); renderExp('all'); renderSeason(); renderTripSeason(); netInit();
   const hs = new URLSearchParams((location.hash||'').replace(/^#/,''));
   const qs = new URLSearchParams((location.search||'').replace(/^\?/,''));
   const get = k => (hs.get(k) !== null ? hs.get(k) : qs.get(k));
