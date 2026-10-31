@@ -9,8 +9,10 @@
     python server.py            # 默认 8787 端口
     python server.py 9000       # 指定端口
 """
+import base64
 import json
 import os
+import re
 import socket
 import sys
 import threading
@@ -215,6 +217,30 @@ def inject_before_body(html, payload):
     return html[:idx] + payload + html[idx:]
 
 
+_DIORAMA_HTML = None
+
+
+def diorama_page():
+    """Return the embedded 3D page as a real same-origin URL.
+
+    iOS WKWebView (WeChat/Safari in-app) is unreliable with very large
+    iframe srcdoc / blob documents; serving it over HTTP is the safe path.
+    """
+    global _DIORAMA_HTML
+    if _DIORAMA_HTML is not None:
+        return _DIORAMA_HTML
+    try:
+        with open(PAGE, "rb") as f:
+            raw = f.read()
+        m = re.search(rb'window\.DIORAMA_B64\s*=\s*"([^"]+)"', raw)
+        if not m:
+            return None
+        _DIORAMA_HTML = base64.b64decode(m.group(1))
+        return _DIORAMA_HTML
+    except Exception:
+        return None
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "XinhuoRenyi/1.0"
 
@@ -257,6 +283,14 @@ class Handler(BaseHTTPRequestHandler):
                 self._send(200, html, "text/html; charset=utf-8")
             except FileNotFoundError:
                 self._send(404, "找不到 薪火仁义-交互原型.html", "text/plain; charset=utf-8")
+            return
+
+        if path in ("/diorama.html", "/diorama"):
+            html = diorama_page()
+            if not html:
+                self._send(404, "3D 微景内容未找到", "text/plain; charset=utf-8")
+                return
+            self._send(200, html, "text/html; charset=utf-8")
             return
 
         if path in ("/healthz", "/health"):

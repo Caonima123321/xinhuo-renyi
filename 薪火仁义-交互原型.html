@@ -631,6 +631,16 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
   font:500 11px var(--sans);letter-spacing:.08em;transition:opacity .4s;pointer-events:none}
 .diorama-loading.off{opacity:0}
 .diorama-loading i{width:30px;height:30px;border-radius:50%;border:2px solid rgba(240,210,155,.25);border-top-color:#F0D29B;animation:dioramaSpin .9s linear infinite}
+.diorama-fallback{position:absolute;inset:0;z-index:6;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:34px 28px;text-align:center;background:radial-gradient(circle at 50% 38%,#8E3025 0%,#4A1713 62%,#2A1712 100%);color:#F6E7C8}
+.diorama-fallback.on{display:flex}
+.df-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(246,231,200,.4);
+  font:600 12px var(--sans);letter-spacing:.12em;color:#E8C88D;margin-bottom:2px}
+.diorama-fallback b{font:600 17px var(--serif);letter-spacing:.04em}
+.diorama-fallback p{margin:0;max-width:280px;font:400 11.5px/1.8 var(--sans);color:rgba(246,231,200,.76)}
+.diorama-fallback button{margin-top:6px;padding:9px 20px;border:1px solid rgba(246,231,200,.45);border-radius:20px;
+  background:transparent;color:#F6E7C8;font:600 11.5px var(--sans);cursor:pointer}
+.diorama-fallback button:active{background:rgba(246,231,200,.12)}
 @keyframes dioramaSpin{to{transform:rotate(360deg)}}
 </style>
 
@@ -889,8 +899,14 @@ main{position:relative;flex:1 1 auto;overflow:hidden}
         <!-- ========== 2 红创微景 3D ========== -->
         <section class="screen diorama" data-screen="diorama" data-title="红创微景">
           <div class="diorama-shell">
-            <iframe id="dioramaFrame" title="红创微景 · 可进入的红色文创三维商店" allow="fullscreen; autoplay" loading="lazy"></iframe>
+            <iframe id="dioramaFrame" title="红创微景 · 可进入的红色文创三维商店" allow="fullscreen; autoplay"></iframe>
             <div class="diorama-loading" id="dioramaLoading"><i></i><span>正在布置红创微景…</span></div>
+            <div class="diorama-fallback" id="dioramaFallback">
+              <span class="df-mark">3D</span>
+              <b>微景没有显示出来</b>
+              <p id="dioramaFallbackMsg">当前浏览器可能没有启用 WebGL。请换用 Safari / Chrome 打开；在微信里可点右上角「…」→「在浏览器打开」。</p>
+              <button onclick="resetDiorama()">重新加载</button>
+            </div>
             <div class="diorama-head">
               <span class="dh-pill"><i></i>3D · 红创微景</span>
               <span class="dh-state" id="dioramaState">外景</span>
@@ -2042,6 +2058,10 @@ function back(){
 let dioramaLoaded = false;
 let dioramaHTML = null;
 let dioramaMode = 'exterior';
+let dioramaURL = null;
+let dioramaReady = false;
+let dioramaWatch = null;
+let dioramaTriedSrcdoc = false;
 function dioramaSource(){
   if(dioramaHTML) return dioramaHTML;
   try{
@@ -2054,12 +2074,45 @@ function dioramaSource(){
   }
   return dioramaHTML;
 }
+function webglSupported(){
+  try{
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+    if(!gl) return false;
+    const lose = gl.getExtension('WEBGL_lose_context');
+    if(lose) lose.loseContext();
+    return true;
+  }catch(err){ return false; }
+}
+function showDioramaFallback(msg){
+  const el = document.getElementById('dioramaFallback');
+  const msgEl = document.getElementById('dioramaFallbackMsg');
+  if(msgEl && msg) msgEl.textContent = msg;
+  if(el) el.classList.add('on');
+  const loading = document.getElementById('dioramaLoading');
+  if(loading) loading.classList.add('off');
+  clearTimeout(dioramaWatch);
+}
+function hideDioramaFallback(){
+  const el = document.getElementById('dioramaFallback');
+  if(el) el.classList.remove('on');
+}
 function ensureDiorama(){
   const frame = document.getElementById('dioramaFrame');
   if(!frame || dioramaLoaded) return;
   dioramaLoaded = true;
+  hideDioramaFallback();
+  dioramaReady = false;
+  dioramaTriedSrcdoc = false;
   const loading = document.getElementById('dioramaLoading');
   if(loading) loading.classList.remove('off');
+
+  if(!webglSupported()){
+    dioramaLoaded = false;
+    showDioramaFallback('当前浏览器没有启用 WebGL。请换用 Safari / Chrome 打开；在微信里可点右上角「…」→「在浏览器打开」。');
+    return;
+  }
+
   frame.onload = function(){
     try{
       const api = frame.contentWindow.__DIORAMA_API__;
@@ -2071,26 +2124,66 @@ function ensureDiorama(){
     }catch(err){}
     setTimeout(function(){ if(loading) loading.classList.add('off'); }, 420);
   };
-  frame.srcdoc = dioramaSource();
-  setTimeout(function(){ if(loading) loading.classList.add('off'); }, 8000);
+
+  try{
+    const remote = (location.protocol === 'http:' || location.protocol === 'https:')
+      ? 'diorama.html?v=' + Date.now() : '';
+    if(remote){
+      frame.removeAttribute('srcdoc');
+      frame.src = remote;
+    }else{
+      if(dioramaURL){ URL.revokeObjectURL(dioramaURL); dioramaURL = null; }
+      dioramaURL = URL.createObjectURL(new Blob([dioramaSource()], {type:'text/html'}));
+      frame.removeAttribute('srcdoc');
+      frame.src = dioramaURL;
+    }
+  }catch(err){
+    frame.srcdoc = dioramaSource();
+  }
+
+  clearTimeout(dioramaWatch);
+  dioramaWatch = setTimeout(function(){
+    if(dioramaReady) return;
+    if(!dioramaTriedSrcdoc){
+      dioramaTriedSrcdoc = true;
+      try{
+        frame.removeAttribute('src');
+        frame.removeAttribute('srcdoc');
+        frame.srcdoc = dioramaSource();
+        dioramaWatch = setTimeout(function(){
+          if(!dioramaReady) showDioramaFallback('3D 微景没有启动。请点「重新加载」，或用系统浏览器打开本页。');
+        }, 10000);
+        return;
+      }catch(err){}
+    }
+    showDioramaFallback('3D 微景没有启动。请点「重新加载」，或用系统浏览器打开本页。');
+  }, 12000);
 }
 function unloadDiorama(){
   const frame = document.getElementById('dioramaFrame');
   if(!frame) return;
   dioramaLoaded = false;
-  try{ frame.srcdoc = ''; }catch(err){}
-  frame.removeAttribute('srcdoc');
+  dioramaReady = false;
+  clearTimeout(dioramaWatch);
+  try{ frame.removeAttribute('srcdoc'); }catch(err){}
   frame.src = 'about:blank';
+  if(dioramaURL){ URL.revokeObjectURL(dioramaURL); dioramaURL = null; }
   const loading = document.getElementById('dioramaLoading');
   if(loading) loading.classList.remove('off');
+  hideDioramaFallback();
   setDioramaMode('exterior');
 }
 function resetDiorama(){
   const frame = document.getElementById('dioramaFrame');
   if(!frame) return;
   dioramaLoaded = false;
-  try{ frame.srcdoc = ''; }catch(err){}
-  setTimeout(function(){ ensureDiorama(); }, 140);
+  dioramaReady = false;
+  clearTimeout(dioramaWatch);
+  try{ frame.removeAttribute('srcdoc'); }catch(err){}
+  frame.src = 'about:blank';
+  if(dioramaURL){ URL.revokeObjectURL(dioramaURL); dioramaURL = null; }
+  hideDioramaFallback();
+  setTimeout(function(){ ensureDiorama(); }, 160);
   setDioramaMode('exterior');
   toast('已回到微景外景');
 }
@@ -2124,9 +2217,19 @@ function dioramaAction(){
 }
 window.addEventListener('message', function(e){
   const d = e.data || {};
-  if(d.type !== 'diorama:mode') return;
   const frame = document.getElementById('dioramaFrame');
   if(frame && e.source && e.source !== frame.contentWindow) return;
+  if(d.type === 'diorama:ready'){
+    dioramaReady = true;
+    clearTimeout(dioramaWatch);
+    hideDioramaFallback();
+    const loading = document.getElementById('dioramaLoading');
+    if(loading) loading.classList.add('off');
+    return;
+  }
+  if(d.type !== 'diorama:mode') return;
+  dioramaReady = true;
+  hideDioramaFallback();
   setDioramaMode(d.mode);
 });
 
