@@ -2050,7 +2050,7 @@ function dioramaSource(){
     for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
     dioramaHTML = new TextDecoder('utf-8').decode(bytes);
   }catch(err){
-    dioramaHTML = '<!doctype html><meta charset="utf-8"><body style="margin:0;background:#2A1712;color:#F0D29B;font:13px sans-serif;display:grid;place-items:center;height:100vh">3D 微景加载失败，请刷新重试</body>';
+    dioramaHTML = '<!doctype html><meta charset="utf-8"><body style="margin:0;background:#2A1712;color:#F0D29B;font:13px sans-serif;display:grid;place-items:center;height:100vh">3D 微景加载失败，请刷新重试<\/body>';
   }
   return dioramaHTML;
 }

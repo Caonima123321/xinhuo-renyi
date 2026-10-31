@@ -199,6 +199,22 @@ def public_base(handler):
     return "http://%s:%d/" % (lan_ip(), PORT)
 
 
+def inject_before_head(html, payload):
+    """Insert before the real <head> close, never inside a JS/HTML string."""
+    idx = html.find(b"</head>")
+    if idx < 0:
+        return html + payload
+    return html[:idx] + payload + html[idx:]
+
+
+def inject_before_body(html, payload):
+    """Insert before the *last* </body>, never inside a JS/HTML string."""
+    idx = html.rfind(b"</body>")
+    if idx < 0:
+        return html + payload
+    return html[:idx] + payload + html[idx:]
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "XinhuoRenyi/1.0"
 
@@ -234,10 +250,10 @@ class Handler(BaseHTTPRequestHandler):
                 pass  # 保留机身边框，不注入 bare
                 full = (q.get("full") or [""])[0] == "1"
                 if full:
-                    html = html.replace(b"</head>", FULLMODE_CSS + b"</head>", 1)
+                    html = inject_before_head(html, FULLMODE_CSS)
                 else:
-                    html = html.replace(b"</head>", APPMODE_CSS + b"</head>", 1)
-                    html = html.replace(b"</body>", APPMODE_JS + b"</body>", 1)
+                    html = inject_before_head(html, APPMODE_CSS)
+                    html = inject_before_body(html, APPMODE_JS)
                 self._send(200, html, "text/html; charset=utf-8")
             except FileNotFoundError:
                 self._send(404, "找不到 薪火仁义-交互原型.html", "text/plain; charset=utf-8")
