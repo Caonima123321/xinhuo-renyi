@@ -2122,12 +2122,11 @@ function ensureDiorama(){
         api.orbit.radius = Math.min(api.orbit.radius, 52);
       }
     }catch(err){}
-    setTimeout(function(){ if(loading) loading.classList.add('off'); }, 420);
   };
 
+  const remote = (location.protocol === 'http:' || location.protocol === 'https:')
+    ? 'diorama.html?v=' + Date.now() : '';
   try{
-    const remote = (location.protocol === 'http:' || location.protocol === 'https:')
-      ? 'diorama.html?v=' + Date.now() : '';
     if(remote){
       frame.removeAttribute('srcdoc');
       frame.src = remote;
@@ -2144,7 +2143,7 @@ function ensureDiorama(){
   clearTimeout(dioramaWatch);
   dioramaWatch = setTimeout(function(){
     if(dioramaReady) return;
-    if(!dioramaTriedSrcdoc){
+    if(!remote && !dioramaTriedSrcdoc){
       dioramaTriedSrcdoc = true;
       try{
         frame.removeAttribute('src');
@@ -2152,12 +2151,12 @@ function ensureDiorama(){
         frame.srcdoc = dioramaSource();
         dioramaWatch = setTimeout(function(){
           if(!dioramaReady) showDioramaFallback('3D 微景没有启动。请点「重新加载」，或用系统浏览器打开本页。');
-        }, 10000);
+        }, 12000);
         return;
       }catch(err){}
     }
     showDioramaFallback('3D 微景没有启动。请点「重新加载」，或用系统浏览器打开本页。');
-  }, 12000);
+  }, 20000);
 }
 function unloadDiorama(){
   const frame = document.getElementById('dioramaFrame');
@@ -2230,6 +2229,8 @@ window.addEventListener('message', function(e){
   if(d.type !== 'diorama:mode') return;
   dioramaReady = true;
   hideDioramaFallback();
+  const loading = document.getElementById('dioramaLoading');
+  if(loading) loading.classList.add('off');
   setDioramaMode(d.mode);
 });
 
